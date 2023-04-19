@@ -4,12 +4,13 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(GameWidget(game: SpaceShooterGame()));
 }
 
-class SpaceShooterGame extends FlameGame with PanDetector {
+class SpaceShooterGame extends FlameGame with PanDetector, KeyboardEvents {
   late Player player;
   late Line line;
   late Word word1;
@@ -21,8 +22,6 @@ class SpaceShooterGame extends FlameGame with PanDetector {
     await super.onLoad();
 
     final playerSprite = await loadSprite('player-sprite.png');
-
-    print(size);
 
     player = Player()
       ..sprite = playerSprite
@@ -75,6 +74,27 @@ class SpaceShooterGame extends FlameGame with PanDetector {
       word1.position.y = size.y;
       add(word1);
     }
+  }
+
+  @override
+  KeyEventResult onKeyEvent(
+    RawKeyEvent event,
+    Set<LogicalKeyboardKey> keysPressed,
+  ) {
+    final isKeyDown = event is RawKeyDownEvent;
+
+    if (keysPressed.isNotEmpty && isKeyDown) {
+      // if (keysPressed.contains(LogicalKeyboardKey.altLeft) ||
+      //     keysPressed.contains(LogicalKeyboardKey.altRight)) {
+      //   this.shootHarder();
+      // } else {
+      //   this.shoot();
+      // }
+      print(keysPressed.single.keyLabel);
+
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
   }
 }
 
