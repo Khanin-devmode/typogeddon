@@ -46,7 +46,7 @@ class SpaceShooterGame extends FlameGame with PanDetector, KeyboardEvents {
       ..anchor = Anchor.center;
     add(line);
 
-    word1 = Word(removeFn: addWordScore)
+    word1 = Word(removeFn: addWordScore, removeItself: () => remove(word1))
       ..text = 'Lorem'
       ..position = Vector2(size.x * random.nextDouble(), size.y);
     add(word1);
@@ -61,9 +61,9 @@ class SpaceShooterGame extends FlameGame with PanDetector, KeyboardEvents {
   void update(double dt) {
     super.update(dt);
 
-    player.move(Vector2(0, -2));
+    // player.move(Vector2(0, -2));
     word1.move(Vector2(0, -2));
-    // print('${player.position.y} : ${line.position.y}');
+
     if (player.position.y == line.position.y) {
       remove(player);
     }
@@ -98,9 +98,11 @@ class SpaceShooterGame extends FlameGame with PanDetector, KeyboardEvents {
       // } else {
       //   this.shoot();
       // }
-      print(keysPressed.single.keyLabel);
-
-      // return KeyEventResult.;
+      // print(keysPressed.single.keyLabel);
+      if (keysPressed.contains(LogicalKeyboardKey.space)) {
+        word1.textExplode();
+        return KeyEventResult.handled;
+      }
     }
     return KeyEventResult.ignored;
   }
@@ -126,9 +128,10 @@ class Player extends SpriteComponent with HasGameRef<SpaceShooterGame> {
 }
 
 class Word extends TextComponent {
-  Word({required this.removeFn});
+  Word({required this.removeFn, required this.removeItself});
 
   final Function removeFn;
+  final Function removeItself;
 
   void move(Vector2 delta) {
     position.add(delta);
@@ -136,8 +139,19 @@ class Word extends TextComponent {
 
   @override
   void onRemove() {
-    // TODO: implement onRemove
     removeFn();
     super.onRemove();
+  }
+
+  void textExplode() {
+    text = text.substring(1);
+    if (text.isEmpty) {
+      removeItself();
+      print('text empty!');
+    }
+  }
+
+  void resetText() {
+    text = 'Lorem';
   }
 }
